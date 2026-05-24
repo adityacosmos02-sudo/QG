@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For G</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #050611 0%, #010204 100%);
+            color: #DCD0FF; 
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .night-sky {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* --- MOVED TO TOP RIGHT CORNER --- */
+        .moon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 100px; 
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffffff 0%, #fcfcfc 40%, #f0f0f0 75%, #dfdfdf 100%);
+            box-shadow: 
+                inset -8px -8px 15px rgba(0, 0, 0, 0.1),
+                0 0 40px rgba(255, 255, 255, 0.6),
+                0 0 80px rgba(255, 255, 255, 0.3);
+        }
+
+        .moon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            opacity: 0.2;
+            background: 
+                radial-gradient(circle at 60% 40%, #a0a0a0 8%, transparent 12%),
+                radial-gradient(circle at 40% 70%, #909090 12%, transparent 18%),
+                radial-gradient(circle at 25% 45%, #909090 6%, transparent 10%),
+                radial-gradient(circle at 70% 65%, #808080 5%, transparent 9%);
+        }
+
+        /* Twinkling Stars */
+        .star {
+            position: absolute;
+            background-color: #ffffff;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            opacity: var(--max-opacity);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.1; transform: scale(0.8); }
+            50% { opacity: var(--max-opacity); transform: scale(1.2); }
+        }
+
+        /* --- CONTAINER BUFFER FOR NO MOON OVERLAP --- */
+        .container {
+            text-align: center;
+            z-index: 2;
+            padding: 20px;
+            width: 100%;
+            max-width: 760px; /* Constrains text bounds safety area safely inside screen limits */
+            margin-top: 60px; /* Gives the top-right moon clear space */
+        }
+
+        /* --- GLITTERY PURPLE TEXT EFFECT --- */
+        .line {
+            font-size: 2.8rem;
+            font-weight: 400;
+            line-height: 1.5;
+            min-height: 9.5rem; 
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            
+            background: linear-gradient(
+                to right, 
+                #b19ffb 0%, 
+                #e2d5ff 25%, 
+                #8a2be2 50%, 
+                #e2d5ff 75%, 
+                #b19ffb 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glitterShimmer 4s linear infinite;
+            
+            filter: drop-shadow(0 0 12px rgba(138, 43, 226, 0.7));
+        }
+
+        @keyframes glitterShimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .cursor {
+            display: inline-block;
+            background-color: #dfd5ff;
+            margin-left: 6px;
+            width: 3px;
+            height: 2.8rem;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.8);
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .hint {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: rgba(220, 208, 255, 0.6); 
+            margin-top: 25px;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 8px rgba(138, 43, 226, 0.4);
+        }
+
+        .gif-container {
+            margin-top: 30px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #gif-box-final.gif-container {
+            max-width: 680px; 
+        }
+
+        #gif-box-final .media-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .gif-container.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .gif-container img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 30px rgba(138,43,226,0.25);
+            border: 2px solid rgba(220,208,255,0.2);
+        }
+        
+        #gif-box-final img {
+            width: 50%; 
+            max-width: 300px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 30px rgba(255,105,180,0.3);
+        }
+
+        /* Scale typography adjustments down slightly for smaller screens to remain moon-safe */
+        @media (max-width: 768px) {
+            .line {
+                font-size: 2.2rem;
+                min-height: 8rem;
+            }
+            .cursor {
+                height: 2.2rem;
+            }
+            .moon {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" src="Akhar.mp3" loop></audio>
+
+    <div class="night-sky" id="sky-bg">
+        <div class="moon"></div>
+    </div>
+
+    <canvas id="fireworksCanvas"></canvas>
+
+    <div class="container">
+        <div class="line"><span id="text-target"></span><span class="cursor" id="cursor"></span></div>
+        <div class="hint" id="hint-text">Click anywhere to find out</div>
+        
+        <div class="gif-container" id="gif-box-intro">
+            <img src="Gif1.png" alt="Intro Page Visual">
+        </div>
+
+        <div class="gif-container" id="gif-box-final" style="display: none;">
+            <div class="media-row">
+                <img src="G1.jpg" alt="Garima Portrait">
+                <img src="Ameme.gif" alt="Abhijeet Dancing Meme">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const partOne = "Garima Issar";
+        const partTwo = "Do you know what?";
+        const typingSpeed = 80; 
+
+        const textTarget = document.getElementById('text-target');
+        const hintText = document.getElementById('hint-text');
+        const gifBoxIntro = document.getElementById('gif-box-intro');
+        const gifBoxFinal = document.getElementById('gif-box-final');
+        const cursor = document.getElementById('cursor');
+        const skyBg = document.getElementById('sky-bg');
+        const bgMusic = document.getElementById('bg-music');
+        
+        let currentStep = 1;
+        let isTyping = false;
+        let allowAutoFireworks = false;
+
+        function createStars() {
+            const starCount = 100; 
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                const size = Math.random() * 2.5 + 0.5;
+                const topPos = Math.random() * 100;
+                const leftPos = Math.random() * 100;
+                const duration = Math.random() * 3 + 2; 
+                const maxOpacity = Math.random() * 0.7 + 0.3;
+
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.top = `${topPos}%`;
+                star.style.left = `${leftPos}%`;
+                
+                star.style.setProperty('--duration', `${duration}s`);
+                star.style.setProperty('--max-opacity', maxOpacity);
+
+                skyBg.appendChild(star);
+            }
+        }
+
+        function startIntroSequence() {
+            isTyping = true;
+            let i = 0;
+
+            function typePartOne() {
+                if (i < partOne.length) {
+                    textTarget.innerHTML += partOne.charAt(i);
+                    i++;
+                    setTimeout(typePartOne, typingSpeed);
+                } else {
+                    textTarget.innerHTML += "<br>";
+                    i = 0;
+                    setTimeout(typePartTwo, 500); 
+                }
+            }
+
+            function typePartTwo() {
+                if (i < partTwo.length) {
+                    textTarget.innerHTML += partTwo.charAt(i);
+                    i++;
+                    setTimeout(typePartTwo, typingSpeed);
+                } else {
+                    isTyping = false;
+                    hintText.style.opacity = '1';
+                    gifBoxIntro.classList.add('show'); 
+                }
+            }
+
+            typePartOne();
+        }
+
+        function typeSecondLineSequence(callback) {
+            isTyping = true;
+            textTarget.innerHTML = '';
+            cursor.style.display = 'inline-block';
+            
+            const segmentOne = "Ni m tere naalo sohna ";
+            const segmentTwo = "koi vi vekhya na ✦";
+            let i = 0;
+
+            function typeSegmentOne() {
+                if (i < segmentOne.length) {
+                    textTarget.innerHTML += segmentOne.charAt(i);
+                    i++;
+                    setTimeout(typeSegmentOne, typingSpeed);
+                } else {
+                    textTarget.innerHTML += "<br>"; 
+                    i = 0;
+                    setTimeout(typeSegmentTwo, 150); 
+                }
+            }
+
+            function typeSegmentTwo() {
+                if (i < segmentTwo.length) {
+                    textTarget.innerHTML += segmentTwo.charAt(i);
+                    i++;
+                    setTimeout(typeSegmentTwo, typingSpeed);
+                } else {
+                    isTyping = false;
+                    if(callback) callback();
+                }
+            }
+
+            typeSegmentOne();
+        }
+
+        function tryPlayingMusic() {
+            bgMusic.play().catch(() => {
+                console.log("Audio autoplay waiting for user interaction...");
+            });
+        }
+
+        window.addEventListener("load", () => {
+            createStars(); 
+            startIntroSequence(); 
+            startCanvasEngine();
+            tryPlayingMusic();
+        });
+
+        document.body.addEventListener('click', (e) => {
+            if (bgMusic.paused) {
+                bgMusic.play();
+            }
+
+            if (isTyping) return; 
+
+            if (currentStep === 1) {
+                currentStep = 2;
+                hintText.style.opacity = '0';
+                
+                gifBoxIntro.style.display = 'none';
+                gifBoxFinal.style.display = 'block';
+                
+                createExplosion(e.clientX, e.clientY); 
+                
+                typeSecondLineSequence(() => {
+                    cursor.style.display = 'none';
+                    gifBoxFinal.classList.add('show');
+                    allowAutoFireworks = true; 
+                });
+            } else if (currentStep === 2) {
+                createExplosion(e.clientX, e.clientY);
+            }
+        });
+
+        // --- SPARKLY FIREWORKS ENGINE ---
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class SparkleParticle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.lastX = x;
+                this.lastY = y;
+                this.color = color;
+                
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 9 + 4; 
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                
+                this.alpha = 1;
+                this.decay = Math.random() * 0.012 + 0.008; 
+                this.gravity = 0.07; 
+                this.friction = 0.95; 
+            }
+            update() {
+                this.lastX = this.x;
+                this.lastY = this.y;
+                
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+            draw() {
+                if (Math.random() > 0.15) { 
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.beginPath();
+                    ctx.moveTo(this.lastX, this.lastY);
+                    ctx.lineTo(this.x, this.y);
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = Math.random() * 2 + 1.5; 
+                    ctx.lineCap = 'round';
+                    ctx.shadowBlur = 18; 
+                    ctx.shadowColor = this.color;
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+        }
+
+        function createExplosion(x, y) {
+            const colors = ['#FF1493', '#00BFFF', '#FFD700', '#FF4500', '#9400D3', '#00FFFF', '#FFFFFF', '#FF69B4'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            const particleCount = 130; 
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new SparkleParticle(x, y, color));
+            }
+        }
+
+        function startCanvasEngine() {
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                if (allowAutoFireworks && Math.random() < 0.05) { 
+                    createExplosion(
+                        Math.random() * canvas.width,
+                        Math.random() * (canvas.height * 0.6) + (canvas.height * 0.1)
+                    );
+                }
+
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    particles[i].update();
+                    particles[i].draw();
+                    if (particles[i].alpha <= 0) {
+                        particles.splice(i, 1);
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+    </script>
+</body>
+</html>
