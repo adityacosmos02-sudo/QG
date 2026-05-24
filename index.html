@@ -6,7 +6,7 @@
     <title>For G</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=300;400;600&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -17,7 +17,7 @@
         body {
             font-family: 'Montserrat', sans-serif;
             background: linear-gradient(135deg, #050611 0%, #010204 100%);
-            color: #ffffff;
+            color: #E6E6FA; /* Updated global fallback to Lavender */
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -95,7 +95,7 @@
             text-align: center;
             z-index: 2;
             padding: 20px;
-            max-width: 900px; /* Expanded slightly to give side-by-side layout comfortable breathing room */
+            max-width: 900px;
         }
 
         .line {
@@ -104,13 +104,14 @@
             line-height: 1.5;
             min-height: 8rem; 
             margin-bottom: 20px;
-            text-shadow: 0 0 15px rgba(255,255,255,0.4);
+            color: #E6E6FA; /* Main text color updated to Lavender */
+            text-shadow: 0 0 20px rgba(230, 230, 250, 0.6); /* Vibrant lavender glow */
             letter-spacing: 1px;
         }
 
         .cursor {
             display: inline-block;
-            background-color: #fff;
+            background-color: #E6E6FA; /* Cursor matches lavender theme */
             margin-left: 6px;
             width: 3px;
             height: 2.8rem;
@@ -127,7 +128,7 @@
         .hint {
             font-size: 1.2rem;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(230, 230, 250, 0.7); /* Subtle translucent lavender hint text */
             margin-top: 25px;
             opacity: 0;
             transition: opacity 0.8s ease;
@@ -145,7 +146,6 @@
             margin-right: auto;
         }
 
-        /* Specific row handling layout for the side-by-side container step */
         #gif-box-final.gif-container {
             max-width: 680px; 
         }
@@ -165,12 +165,12 @@
         .gif-container img {
             width: 100%;
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 30px rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 30px rgba(230,230,250,0.2);
+            border: 2px solid rgba(230,230,250,0.2);
         }
         
         #gif-box-final img {
-            width: 50%; /* Splitting the size perfectly down the middle */
+            width: 50%; 
             max-width: 300px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 30px rgba(255,105,180,0.3);
         }
