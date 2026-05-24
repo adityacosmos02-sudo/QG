@@ -37,7 +37,6 @@
             z-index: 1;
         }
 
-        /* --- CLEAN BRIGHT WHITE FULL MOON --- */
         .night-sky {
             position: absolute;
             top: 0;
@@ -47,10 +46,11 @@
             z-index: 0;
         }
 
+        /* --- MOVED TO TOP RIGHT CORNER --- */
         .moon {
             position: absolute;
-            top: 10%;
-            right: 12%;
+            top: 20px;
+            right: 20px;
             width: 100px; 
             height: 100px;
             border-radius: 50%;
@@ -91,11 +91,14 @@
             50% { opacity: var(--max-opacity); transform: scale(1.2); }
         }
 
+        /* --- CONTAINER BUFFER FOR NO MOON OVERLAP --- */
         .container {
             text-align: center;
             z-index: 2;
             padding: 20px;
-            max-width: 900px;
+            width: 100%;
+            max-width: 760px; /* Constrains text bounds safety area safely inside screen limits */
+            margin-top: 60px; /* Gives the top-right moon clear space */
         }
 
         /* --- GLITTERY PURPLE TEXT EFFECT --- */
@@ -103,7 +106,7 @@
             font-size: 2.8rem;
             font-weight: 400;
             line-height: 1.5;
-            min-height: 9.5rem; /* Slightly expanded container to beautifully clear 2 vertical lines */
+            min-height: 9.5rem; 
             margin-bottom: 20px;
             letter-spacing: 1px;
             
@@ -195,6 +198,21 @@
             width: 50%; 
             max-width: 300px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 30px rgba(255,105,180,0.3);
+        }
+
+        /* Scale typography adjustments down slightly for smaller screens to remain moon-safe */
+        @media (max-width: 768px) {
+            .line {
+                font-size: 2.2rem;
+                min-height: 8rem;
+            }
+            .cursor {
+                height: 2.2rem;
+            }
+            .moon {
+                width: 70px;
+                height: 70px;
+            }
         }
     </style>
 </head>
@@ -296,7 +314,6 @@
             typePartOne();
         }
 
-        // --- TYPEWRITER TRANSLATION ENGINE FEATURING AUTO-LINE BREAK ---
         function typeSecondLineSequence(callback) {
             isTyping = true;
             textTarget.innerHTML = '';
@@ -312,7 +329,7 @@
                     i++;
                     setTimeout(typeSegmentOne, typingSpeed);
                 } else {
-                    textTarget.innerHTML += "<br>"; // Seamlessly breaks down to the second row
+                    textTarget.innerHTML += "<br>"; 
                     i = 0;
                     setTimeout(typeSegmentTwo, 150); 
                 }
@@ -361,7 +378,6 @@
                 
                 createExplosion(e.clientX, e.clientY); 
                 
-                // Using the specific sequence type handler
                 typeSecondLineSequence(() => {
                     cursor.style.display = 'none';
                     gifBoxFinal.classList.add('show');
@@ -371,7 +387,6 @@
                 createExplosion(e.clientX, e.clientY);
             }
         });
-
 
         // --- SPARKLY FIREWORKS ENGINE ---
         const canvas = document.getElementById('fireworksCanvas');
